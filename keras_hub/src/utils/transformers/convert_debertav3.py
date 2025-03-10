@@ -107,15 +107,15 @@ def convert_weights(backbone, loader, transformers_config):
         )
         # Relative Embeddings
         loader.port_weight(
-            keras_variable=block.relative_embeddings.rel_embeddings,
+            keras_variable=backbone.get_layer("relative_embeddings").rel_embeddings,
             hf_weight_key=f"{hf_prefix}{i}.rel_embeddings.weight",
         )
         loader.port_weight(
-            keras_variable=block.relative_embeddings.layer_norm.beta,
+            keras_variable=backbone.get_layer("relative_embeddings").layer_norm.beta,
             hf_weight_key=f"{hf_prefix}{i}.LayerNorm.bias",
         )
         loader.port_weight(
-            keras_variable=block.relative_embeddings.layer_norm.gamma,
+            keras_variable=backbone.get_layer("relative_embeddings").layer_norm.gamma,
             hf_weight_key=f"{hf_prefix}{i}.LayerNorm.weight",
         )
 
