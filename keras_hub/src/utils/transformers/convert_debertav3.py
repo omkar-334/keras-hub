@@ -22,15 +22,15 @@ def convert_weights(backbone, loader, transformers_config):
     # Embedding layer
     loader.port_weight(
         keras_variable=backbone.get_layer("token_embedding").embeddings,
-        hf_weight_key="debertav3.embeddings.word_embeddings.weight",
+        hf_weight_key="embeddings.word_embeddings.weight",
     )
     loader.port_weight(
         keras_variable=backbone.get_layer("embeddings_layer_norm").beta,
-        hf_weight_key="debertav3.embeddings.LayerNorm.beta",
+        hf_weight_key="embeddings.LayerNorm.bias",
     )
     loader.port_weight(
         keras_variable=backbone.get_layer("embeddings_layer_norm").gamma,
-        hf_weight_key="debertav3.embeddings.LayerNorm.gamma",
+        hf_weight_key="embeddings.LayerNorm.weight",
     )
 
     def transpose_and_reshape(x, shape):
@@ -40,7 +40,7 @@ def convert_weights(backbone, loader, transformers_config):
     for i in range(backbone.num_layers):
         block = backbone.get_layer(f"disentangled_attention_encoder_layer_{i}")
         attn = block._self_attention_layer
-        hf_prefix = "debertav3.encoder.layer."
+        hf_prefix = "encoder.layer."
         # Attention layers
         loader.port_weight(
             keras_variable=attn._query_dense.kernel,
@@ -69,11 +69,11 @@ def convert_weights(backbone, loader, transformers_config):
         )
         loader.port_weight(
             keras_variable=block._self_attention_layer_norm.beta,
-            hf_weight_key=f"{hf_prefix}{i}.attention.output.LayerNorm.beta",
+            hf_weight_key=f"{hf_prefix}{i}.attention.output.LayerNorm.bias",
         )
         loader.port_weight(
             keras_variable=block._self_attention_layer_norm.gamma,
-            hf_weight_key=f"{hf_prefix}{i}.attention.output.LayerNorm.gamma",
+            hf_weight_key=f"{hf_prefix}{i}.attention.output.LayerNorm.weight",
         )
         # Intermediate layer
         loader.port_weight(
@@ -99,11 +99,11 @@ def convert_weights(backbone, loader, transformers_config):
         )
         loader.port_weight(
             keras_variable=block._feedforward_layer_norm.beta,
-            hf_weight_key=f"{hf_prefix}{i}.output.LayerNorm.beta",
+            hf_weight_key=f"{hf_prefix}{i}.output.LayerNorm.bias",
         )
         loader.port_weight(
             keras_variable=block._feedforward_layer_norm.gamma,
-            hf_weight_key=f"{hf_prefix}{i}.output.LayerNorm.gamma",
+            hf_weight_key=f"{hf_prefix}{i}.output.LayerNorm.weight",
         )
         # Relative Embeddings
         loader.port_weight(
@@ -112,11 +112,11 @@ def convert_weights(backbone, loader, transformers_config):
         )
         loader.port_weight(
             keras_variable=block.relative_embeddings.layer_norm.beta,
-            hf_weight_key=f"{hf_prefix}{i}.LayerNorm.beta",
+            hf_weight_key=f"{hf_prefix}{i}.LayerNorm.bias",
         )
         loader.port_weight(
             keras_variable=block.relative_embeddings.layer_norm.gamma,
-            hf_weight_key=f"{hf_prefix}{i}.LayerNorm.gamma",
+            hf_weight_key=f"{hf_prefix}{i}.LayerNorm.weight",
         )
 
 
